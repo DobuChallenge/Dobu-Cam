@@ -2,6 +2,8 @@ from datetime import datetime
 
 from flask import Flask, Response, jsonify, request, send_from_directory
 
+from ia import analisar_pet
+
 
 app = Flask(__name__)
 latest_frame = None
@@ -81,6 +83,15 @@ def camera_frame():
 def status():
     return jsonify(public_state())
 
+@app.route("/ai/analyze")
+def ai_analyze():
+    dados = public_state()
+    resultado = analisar_pet(dados)
+
+    return jsonify({
+        "ok": True,
+        "ai": resultado
+    })
 
 @app.route("/update/<detected>", methods=["GET", "POST", "OPTIONS"])
 def update(detected):

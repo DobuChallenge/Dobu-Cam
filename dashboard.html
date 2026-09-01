@@ -116,6 +116,40 @@ body {
     color: #6b4e2e;
 }
 
+.botao-ia {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #2f2f2f;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.botao-ia:hover {
+    opacity: 0.85;
+}
+
+.ai-result {
+    margin-top: 15px;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 8px;
+    border-left: 5px solid #9a5b00;
+}
+
+.ai-result h4 {
+    margin-top: 0;
+}
+
+.ai-result p {
+    line-height: 1.5;
+}
+
+
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
@@ -128,14 +162,17 @@ body {
     <img src="logo.png" alt="Dobu Monitor">
 </div>
 
-<div class="container">
-    <div class="left">
-        <div class="card">
-            <h3>Status do Animal</h3>
-            <p id="status">Carregando...</p>
-            <p id="hora">Ultima vez visto: --</p>
-            <p id="info" class="info">Camera: aguardando conexao</p>
-        </div>
+<div class="card">
+    <h3>Status do Animal</h3>
+    <p id="status">Carregando...</p>
+    <p id="hora">Ultima vez visto: --</p>
+    <p id="info" class="info">Camera: aguardando conexao</p>
+
+    <button id="botaoIA" onclick="analisarComIA()">
+        Analisar Pet com IA
+    </button>
+<div id="resultadoIA"></div>
+</div>
 
         <div class="card">
             <h3>Historico</h3>
@@ -217,6 +254,63 @@ document.getElementById("cameraFrame").addEventListener("error", () => {
     document.getElementById("cameraFrame").style.display = "none";
     document.getElementById("cameraPlaceholder").style.display = "block";
 });
+
+async function analisarComIA() {
+    const botao = document.getElementById("botaoIA");
+    const resultado = document.getElementById("resultadoIA");
+
+    botao.disabled = true;
+    botao.innerHTML = "Analisando...";
+
+    resultado.innerHTML = `
+        <div class="ai-result">
+            <p>Analisando os dados do pet...</p>
+        </div>
+    `;
+
+    try {
+        const res = await fetch("http://127.0.0.1:5000/ai/analyze");
+        const data = await res.json();
+
+        if (!data.ok) {
+            throw new Error("Não foi possível analisar o pet.");
+        }
+
+        const ai = data.ai;
+
+        resultado.innerHTML = `
+            <div class="ai-result">
+                <h4>Análise da Dobu AI</h4>
+
+                <p>
+                    <strong>${ai.titulo}</strong>
+                </p>
+
+                <p>
+                    ${ai.analise}
+                </p>
+
+                <p>
+                    <strong>💡 Recomendação:</strong><br>
+                    ${ai.recomendacao}
+                </p>
+            </div>
+        `;
+
+    } catch (err) {
+        resultado.innerHTML = `
+            <div class="ai-result">
+                <p>❌ Não foi possível realizar a análise.</p>
+            </div>
+        `;
+
+        console.error(err);
+
+    } finally {
+        botao.disabled = false;
+        botao.innerHTML = "Analisar Pet com IA";
+    }
+}
 
 setInterval(atualizarStatus, 1500);
 setInterval(atualizarCamera, 1000);
