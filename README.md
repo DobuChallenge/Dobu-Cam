@@ -20,6 +20,14 @@ O projeto demonstra, na prática, a aplicação de tecnologias de Visão Computa
 
 ## 📁 Estrutura do projeto
 
+Na integração com o mobile Sprint 4, a fonte disponível é a câmera externa. O app envia o endereço para `/camera-source` e consulta `/status` e `/camera-frame`. As marcações salvas em `/configuracao` ativam a observação dos potes.
+
+O adaptador `animal_observer.py` reutiliza o detector do projeto `petObserver/petObserver`, que deve ficar ao lado desta pasta. A API original do petObserver não foi alterada. Instale as dependências Python antes de iniciar `python backend.py`.
+
+`bowl_monitor.py` conta uma possível interação após quatro segundos de permanência de um cão ou gato identificado na área marcada. Água e comida são separadas; sem marcação ou com os dois potes encobertos, não há contagem. A aproximação não confirma consumo. Os resultados ficam na sessão de captura e são reiniciados ao trocar a fonte ou salvar marcações.
+
+Para conferir a lógica e a integração HTTP: `python -m unittest test_bowl_monitor test_tracking -v`. Esses testes não medem a acurácia visual com animais reais.
+
 ```text
 Dobu-Cam/
 ├── backend.py          # Backend Flask, API HTTP e envio do dashboard
