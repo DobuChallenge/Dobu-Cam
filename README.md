@@ -20,7 +20,7 @@ O projeto demonstra, na prática, a aplicação de tecnologias de Visão Computa
 
 ## 📁 Estrutura do projeto
 
-Na integração com o mobile Sprint 4, a fonte disponível é a câmera externa. O app envia o endereço para `/camera-source` e consulta `/status` e `/camera-frame`. As marcações salvas em `/configuracao` ativam a observação dos potes.
+Na integração com o mobile Sprint 4, é possível conectar uma câmera externa por IP ou usar a webcam do computador. O app seleciona a fonte em `/camera-source` e consulta `/status` e `/camera-frame`. As marcações salvas em `/configuracao` ativam a observação dos potes.
 
 O adaptador `animal_observer.py` reutiliza o detector do projeto `petObserver/petObserver`, que deve ficar ao lado desta pasta. A API original do petObserver não foi alterada. Instale as dependências Python antes de iniciar `python backend.py`.
 
