@@ -43,7 +43,7 @@ def camera_source():
     root = Path(__file__).resolve().parent
     camera = '0'
     if source == 'exemplo':
-        camera = str(root / 'demo-cat.mp4')
+        camera = str(root / 'demo-cat-mobile.mp4')
         if not Path(camera).is_file():
             return jsonify({'error': 'Vídeo de exemplo não encontrado'}), 404
     if source == 'celular':
@@ -65,7 +65,7 @@ def camera_source():
         selected_source = source
         bowl_monitor.reset()
         if source == 'exemplo':
-            state['bowl_config'] = normalizar_configuracao(json.loads((root / 'demo_config.json').read_text(encoding='utf-8')))
+            state['bowl_config'] = {'food': '', 'water': ''}
         elif source != 'stop':
             state['bowl_config'] = carregar_configuracao()
         if source != 'stop':
@@ -78,12 +78,12 @@ def camera_source():
                     creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
         else:
             capture_process = None
-    return jsonify({'source': source, 'running': source != 'stop'})
+    return jsonify({'source': source, 'running': source != 'stop', 'started_at': now_iso()})
 
 
 @app.route('/demo-video')
 def demo_video():
-    return send_from_directory(str(Path(__file__).resolve().parent), 'demo-cat.mp4', mimetype='video/mp4', conditional=True)
+    return send_from_directory(str(Path(__file__).resolve().parent), 'demo-cat-mobile.mp4', mimetype='video/mp4', conditional=True)
 
 
 @app.route('/demo-video-info')
@@ -239,6 +239,7 @@ def listar_snapshots():
 def public_state():
     last_seen = state["last_seen"]
     return {
+        "server_time": now_iso(),
         "pet_detected": state["pet_detected"],
         "pet_moving": state["pet_moving"],
         "abrupt_movement": state["abrupt_movement"],
@@ -392,7 +393,7 @@ def update(detected):
         animal_box = json.loads(request.values.get('animal_box', 'null'))
     except (ValueError, TypeError):
         animal_box = None
-    if selected_source == 'celular':
+    if selected_source in ('celular', 'exemplo'):
         bowl_monitor.update(state['bowl_config'], animal_box if is_detected else None, species,
                             confidence or 0, time.monotonic(), timestamp)
     state["quiet_seconds"] = max(0, request.values.get("quiet_seconds", default=0, type=float) or 0) if is_detected and not is_moving else 0

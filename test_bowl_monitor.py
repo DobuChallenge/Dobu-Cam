@@ -77,5 +77,28 @@ class BowlMonitorTests(unittest.TestCase):
             backend.bowl_monitor = original_monitor
 
 
+class DemoSourceTests(unittest.TestCase):
+    def test_starting_demo_clears_previous_bowl_marks(self):
+        from unittest.mock import patch
+        import backend
+        original_state = dict(backend.state)
+        original_source = backend.selected_source
+        original_monitor = backend.bowl_monitor
+        try:
+            backend.bowl_monitor = BowlMonitor()
+            backend.state['bowl_config'] = {'food': {'x': .1, 'y': .1, 'width': .2, 'height': .2}, 'water': ''}
+            with patch.object(backend, 'capture_process', None), patch('backend.subprocess.Popen'), backend.app.test_client() as client:
+                response = client.post('/camera-source', json={'source': 'exemplo'})
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(backend.state['bowl_config'], {'food': '', 'water': ''})
+                readings = client.get('/status').get_json()['bowl_observations']
+                self.assertEqual(readings['food']['count'], 0)
+                self.assertEqual(readings['water']['count'], 0)
+        finally:
+            backend.state.update(original_state)
+            backend.selected_source = original_source
+            backend.bowl_monitor = original_monitor
+
+
 if __name__ == '__main__':
     unittest.main()
