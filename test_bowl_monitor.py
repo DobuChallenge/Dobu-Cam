@@ -61,7 +61,7 @@ class BowlMonitorTests(unittest.TestCase):
         try:
             backend.bowl_monitor = BowlMonitor()
             backend.state['bowl_config'] = self.config
-            backend.selected_source = 'celular'
+            backend.selected_source = 'webcam'
             with backend.app.test_client() as client:
                 for time in range(6):
                     with patch('backend.time.monotonic', return_value=time):

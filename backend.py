@@ -393,7 +393,7 @@ def update(detected):
         animal_box = json.loads(request.values.get('animal_box', 'null'))
     except (ValueError, TypeError):
         animal_box = None
-    if selected_source in ('celular', 'exemplo'):
+    if selected_source in ('celular', 'webcam'):
         bowl_monitor.update(state['bowl_config'], animal_box if is_detected else None, species,
                             confidence or 0, time.monotonic(), timestamp)
     state["quiet_seconds"] = max(0, request.values.get("quiet_seconds", default=0, type=float) or 0) if is_detected and not is_moving else 0
